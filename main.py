@@ -9,12 +9,12 @@ def main():
     video_frames =  read_video(input_video_path)
 
     # Detect players
-    player_tracker = PlayerTracker(model_path='yolov8x')
+    player_tracker = PlayerTracker(model_path='models/yolov8x.pt')
     player_detections = player_tracker.detect_frames(video_frames, read_from_stub=True, stub_path="tracker_stubs/player_detections.pkl")
     
     # Detect ball
     ball_tracker = BallTracker(model_path='models/yolov5_last.pt')
-    ball_detections = ball_tracker.detect_frames(video_frames, read_from_stub=False, stub_path="tracker_stubs/ball_detections.pkl")
+    ball_detections = ball_tracker.detect_frames(video_frames, read_from_stub=True, stub_path="tracker_stubs/ball_detections.pkl")
 
     # Draw bounding boxes
     output_video_frames = player_tracker.draw_bboxes(video_frames, player_detections)
