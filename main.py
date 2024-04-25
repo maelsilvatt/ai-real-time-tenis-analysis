@@ -1,6 +1,6 @@
 from utils.video_utils import read_video, save_video
-from trackers.player_tracker import PlayerTracker
-from trackers.ball_tracker import BallTracker
+from trackers import PlayerTracker, BallTracker
+from court_line_detector import CourtLineDetector
 
 
 def main():
