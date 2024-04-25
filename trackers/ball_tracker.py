@@ -48,11 +48,11 @@ class BallTracker:
                 text = f'Ball ID: {track_id}'
                 org = (int(bbox[0]), int(bbox[1] - 10))
 
-                cv2.putText(img=frame, text=text, org=org, fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.9, color=(0, 0, 255), thickness=2)
+                cv2.putText(img=frame, text=text, org=org, fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.9, color=(128, 0, 128), thickness=2)
 
                 rec = (int(x1), int(y1), int(x2), int(y2))
 
-                frame = cv2.rectangle(img=frame, rec=rec, color=(0, 0, 255), thickness=2)
+                frame = cv2.rectangle(img=frame, rec=rec, color=(128, 0, 128), thickness=2)
             
             # Draw new data into actual frame
             output_video_frames.append(frame)

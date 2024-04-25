@@ -52,7 +52,7 @@ class PlayerTracker:
 
                 # Draw a text alongside bounding boxes
                 text = f'Player ID: {track_id}'
-                org = (int(bbox[0]), int(bbox[1] - 100))
+                org = (int(bbox[0]), int(bbox[1] - 10))
 
                 cv2.putText(img=frame, text=text, org=org, fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.9, color=(0, 0, 255), thickness=2)
 
