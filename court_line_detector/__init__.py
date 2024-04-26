@@ -1,1 +1,0 @@
-from .keypoints_detector import KeyPointDetector

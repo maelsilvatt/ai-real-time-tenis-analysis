@@ -1,6 +1,6 @@
 from utils.video_utils import read_video, save_video
 from trackers import PlayerTracker, BallTracker
-from keypoints_detector import KeyPointDetector
+from keypoints_detector import KeyPointsDetector
 
 
 def main():
@@ -10,7 +10,7 @@ def main():
 
     # Detect court lines
     keypoints_model_path = "models/keypoints_model.pth"
-    keypoints_detector = KeyPointDetector(keypoints_model_path)
+    keypoints_detector = KeyPointsDetector(keypoints_model_path)
     court_keypoints = keypoints_detector.predict(video_frames[0])
 
     # Detect players
