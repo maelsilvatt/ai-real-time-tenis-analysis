@@ -3,7 +3,7 @@ import torchvision.transforms as transforms
 import torchvision.models as models
 import cv2
 
-class CourtLineDetector:
+class KeyPointDetector:
     def __init__(self, model_path):
         self.model = models.resnet50(pretrained=False)
         self.model.fc = torch.nn.Linear(self.model.fc.in_features, 28)

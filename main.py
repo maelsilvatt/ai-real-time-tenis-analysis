@@ -1,6 +1,6 @@
 from utils.video_utils import read_video, save_video
 from trackers import PlayerTracker, BallTracker
-from court_line_detector import CourtLineDetector
+from keypoints_detector import KeyPointDetector
 
 
 def main():
@@ -9,9 +9,9 @@ def main():
     video_frames =  read_video(input_video_path)
 
     # Detect court lines
-    court_model_path = "models/keypoints_model.pth"
-    court_line_detector = CourtLineDetector(court_model_path)
-    court_keypoints = court_line_detector.predict(video_frames[0])
+    keypoints_model_path = "models/keypoints_model.pth"
+    keypoints_detector = KeyPointDetector(keypoints_model_path)
+    court_keypoints = keypoints_detector.predict(video_frames[0])
 
     # Detect players
     player_tracker = PlayerTracker(model_path='models/yolov8x.pt')
@@ -24,7 +24,7 @@ def main():
     # Draw bounding boxes
     output_video_frames = player_tracker.draw_bboxes(video_frames, player_detections)
     output_video_frames = ball_tracker.draw_bboxes(video_frames, ball_detections)
-    output_video_frames = court_line_detector.draw_keypoints(video_frames, court_keypoints)
+    output_video_frames = keypoints_detector.draw_keypoints(video_frames, court_keypoints)
 
     # Save output video
     save_video(video_frames, "output_videos/output_video.avi")
