@@ -23,8 +23,8 @@ def main():
 
     # Draw bounding boxes
     output_video_frames = player_tracker.draw_bboxes(video_frames, player_detections)
-    output_video_frames = ball_tracker.draw_bboxes(video_frames, ball_detections)
-    output_video_frames = keypoints_detector.draw_keypoints(video_frames, court_keypoints)
+    output_video_frames = ball_tracker.draw_bboxes(output_video_frames, ball_detections)
+    output_video_frames = keypoints_detector.draw_keypoints(output_video_frames, court_keypoints)
 
     # Save output video
     save_video(video_frames, "output_videos/output_video.avi")
