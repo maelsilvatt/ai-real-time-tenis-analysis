@@ -5,7 +5,7 @@ import cv2
 
 class KeyPointsDetector:
     def __init__(self, model_path):
-        self.model = models.resnet50(pretrained=False)
+        self.model = models.resnet50(weights=None)
         self.model.fc = torch.nn.Linear(self.model.fc.in_features, 28)
         self.model.load_state_dict(torch.load(model_path, map_location='cuda:0'))
 
@@ -19,10 +19,10 @@ class KeyPointsDetector:
 
     def predict(self, image):
         img_rgb =cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        image_tensor = self.transform(img_rgb).unsqueeze(0)
+        image_tensor = self.transforms(img_rgb).unsqueeze(0)
         
         with torch.no_grad():
-            outputs = self.mode(image_tensor)
+            outputs = self.model(image_tensor)
 
         keypoints = outputs.squeeze().gpu().numpy()
         raw_h, raw_w = img_rgb.shape[:2]
