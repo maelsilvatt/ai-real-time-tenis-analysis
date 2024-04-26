@@ -24,7 +24,7 @@ class KeyPointsDetector:
         with torch.no_grad():
             outputs = self.model(image_tensor)
 
-        keypoints = outputs.squeeze().gpu().numpy()
+        keypoints = outputs.squeeze().cpu().numpy()
         raw_h, raw_w = img_rgb.shape[:2]
 
         keypoints[::2] *= raw_w / 244.0
