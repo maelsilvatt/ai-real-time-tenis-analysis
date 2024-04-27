@@ -5,12 +5,10 @@ from keypoints_detector import KeyPointsDetector
 
 def main():
     # Read source video
-    input_video_path = "input_videos/input_video.mp4"
-    video_frames =  read_video(input_video_path)
+    video_frames =  read_video("input_videos/input_video.mp4")
 
     # Detect court lines
-    keypoints_model_path = "models/keypoints_model.pth"
-    keypoints_detector = KeyPointsDetector(keypoints_model_path)
+    keypoints_detector = KeyPointsDetector("models/keypoints_model.pth")
     court_keypoints = keypoints_detector.predict(video_frames[0])
 
     # Detect players
