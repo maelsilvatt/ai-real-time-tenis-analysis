@@ -8,7 +8,7 @@ def main():
     video_frames =  read_video("input_videos/input_video.mp4")
 
     # Detect court lines
-    keypoints_detector = KeyPointsDetector("models/keypoints_model.pth")
+    keypoints_detector = KeyPointsDetector(model_path="models/keypoints_model.pth")
     court_keypoints = keypoints_detector.predict(video_frames[0])
 
     # Detect players
