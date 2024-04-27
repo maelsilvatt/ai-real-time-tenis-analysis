@@ -7,7 +7,7 @@ class KeyPointsDetector:
     def __init__(self, model_path):
         self.model = models.resnet50(weights=None)
         self.model.fc = torch.nn.Linear(self.model.fc.in_features, 28)
-        self.model.load_state_dict(torch.load(model_path, map_location='cuda:0'))
+        self.model.load_state_dict(torch.load(model_path, map_location='cpu'))
 
         self.transforms = transforms.Compose([
             transforms.ToPILImage(),
