@@ -1,13 +1,14 @@
 import torch
 import torchvision.transforms as transforms
-import torchvision.models as models
 import cv2
+from torchvision.models import resnet50, ResNet50_Weights
+import numpy as np
 
 class KeyPointsDetector:
     def __init__(self, model_path):
-        self.model = models.resnet50(weights=None)
-        self.model.fc = torch.nn.Linear(self.model.fc.in_features, 28)
-        self.model.load_state_dict(torch.load(model_path, map_location='cpu'))
+        self.model = resnet50(weights=ResNet50_Weights.DEFAULT)
+        self.model.fc = torch.nn.Linear(self.model.fc.in_features, 28) 
+        self.model.load_state_dict(torch.load(model_path, map_location=torch.device("cuda")))
 
         self.transforms = transforms.Compose([
             transforms.ToPILImage(),
@@ -18,17 +19,16 @@ class KeyPointsDetector:
         ])
 
     def predict(self, image):
-        img_rgb =cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        image_tensor = self.transforms(img_rgb).unsqueeze(0)
-        
+        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image_tensor = self.transforms(image_rgb).unsqueeze(0)
+
         with torch.no_grad():
             outputs = self.model(image_tensor)
 
         keypoints = outputs.squeeze().cpu().numpy()
-        raw_h, raw_w = img_rgb.shape[:2]
-
-        keypoints[::2] *= raw_w / 244.0
-        keypoints[1::2] *= raw_h / 244.0
+        raw_h, raw_w = image.shape[:2]
+        keypoints[::2] *= raw_w / 224.0
+        keypoints[1::2] *= raw_h / 224.0
 
         return keypoints
 
@@ -37,16 +37,17 @@ class KeyPointsDetector:
             x = int(keypoints[i])
             y = int(keypoints[i+1])
 
-            cv2.putText(image, str(i//2), (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, color=(0, 0, 255), thickness=2)
-            cv2.circle(image, center=(x, y), radius=5, color=(0, 0, 255), thickness=-1)
+            cv2.putText(image, str(i//2), (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+            cv2.circle(image, (x, y), 5, (0, 0, 255), -1)
 
         return image
+    
 
-    def draw_keypoints_on_video(self, video_frames, keypoint):
+    def draw_keypoints_on_video(self, video_frames, keypoints):
         output_video_frames = []
 
         for frame in video_frames:
-            frame = self.draw_keypoints(frame, keypoint)
+            frame = self.draw_keypoints(frame, keypoints)
             output_video_frames.append(frame)
             
         return output_video_frames
