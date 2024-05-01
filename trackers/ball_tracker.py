@@ -13,12 +13,15 @@ class BallTracker:
         if read_from_stub and stub_path is not None:
             with open(stub_path, 'rb') as f:
                 ball_detections = pickle.load(f)
+                ball_detections = self.interpolate_ball_detections(ball_detections)
             return ball_detections
 
         for frame in frames:
             ball_dict = self.detect_frame(frame)
             ball_detections.append(ball_dict)
         
+        ball_detections = self.interpolate_ball_detections(ball_detections)
+
         if stub_path is not None:
             with open(stub_path, 'wb') as f:
                 pickle.dump(ball_detections, f)
@@ -37,15 +40,21 @@ class BallTracker:
         return ball_dict
     
     # Interpolate intermediate ball positions to get a better position estimative
-    def interpolate_ball_positions(self, ball_positions):
+    def interpolate_ball_detections(self, ball_detections):
         # Obtains all values from keys equal to 1
-        ball_positions = [x.get(1, []) for x in ball_positions]
+        ball_detections = [x.get(1, []) for x in ball_detections]
 
         # To proceed, convert ball positions list into a dataframe
-        df_ball_positions = pd.DataFrame(ball_positions, columns=['x1','y1','x2','y2'])
+        df_ball_detections = pd.DataFrame(ball_detections, columns=['x1','y1','x2','y2'])
 
         # Use interpolate to fill missing values between estimated ball positions
-        df_ball_positions = df_ball_positions.interpolate()
+        df_ball_detections = df_ball_detections.interpolate() 
+        df_ball_detections = df_ball_detections.bfill()
+
+        # Convert the dataframe to a list again
+        ball_detections = [{1:x} for x in df_ball_detections.to_numpy().tolist()]
+
+        return ball_detections
 
     # Given a frame, returns bounding boxes with texts on detected players, if there is any
     def draw_bboxes(self, video_frames, ball_detections):
