@@ -6,18 +6,23 @@ class PlayerTracker:
     def __init__(self, model_path):
         self.model = YOLO(model_path)
 
-    def detect_frames(self, frames, read_from_stub=False, stub_path=None):
+    def detect_frames(self, frames, court_keypoints, read_from_stub=False, stub_path=None):
         player_detections = []
 
+        # Reads from stub if there is any 
         if read_from_stub and stub_path is not None:
             with open(stub_path, 'rb') as f:
                 player_detections = pickle.load(f)
             return player_detections
 
+        # Otherwise, creates a new detection stub
         for frame in frames:
             player_dict = self.detect_frame(frame)
             player_detections.append(player_dict)
         
+        # Filter frames to keep players only
+        player_detections = self.filter_players(court_keypoints, player_detections)
+
         if stub_path is not None:
             with open(stub_path, 'wb') as f:
                 pickle.dump(player_detections, f)
@@ -40,6 +45,48 @@ class PlayerTracker:
                 player_dict[track_id] = result
 
         return player_dict
+
+    # Filter detected persons and keeps players only
+    def filter_players(self, court_keypoints, player_detections):
+        # Gets first frame detections
+        first_frame = player_detections[0] 
+
+        # A tuple list for every entity and their minimum distances to the keypoints
+        distances = []
+
+        # Search for every entity and calculate their distance to the court keypoints
+        for track_id, bbox in first_frame.items():
+
+            # Calculates players bbox center
+            x1, y1, x2, y2 = bbox
+            center_x = int((x1 + x2) / 2)
+            center_y = int((y1 + y2) / 2)
+            p1 = (center_x, center_y)  # player bbox center
+
+            # Calculates the distance between the key point and the player
+            min_distance = float('inf')
+            for i in range(0, len(court_keypoints), 2):
+                p2 = (court_keypoints[i], court_keypoints[i+1])  # key point
+                distance = ((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)**0.5
+                
+                if distance < min_distance:
+                    min_distance = distance
+
+            distances.append((track_id, min_distance))
+
+        # Get the first two entities with the minimal distance to a key point
+        distances.sort(key=lambda x: x[1])
+
+        filtered_players = [distances[0][0], distances[1][0]]
+
+        # Loop over all detections and keep only the filtered players
+        filtered_players_detections = []
+
+        for player_dict in player_detections:
+            filtered_players_dict = {track_id: bbox for track_id, bbox in player_dict.items() if track_id in filtered_players}
+            filtered_players_detections.append(filtered_players_dict)
+
+        return filtered_players_detections
     
     # Given a frame, returns bounding boxes with texts on detected players, if there is any
     def draw_bboxes(self, video_frames, player_detections):
