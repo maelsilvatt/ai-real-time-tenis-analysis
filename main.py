@@ -23,7 +23,6 @@ def main():
     # Draw bounding boxes
     output_video_frames = player_tracker.draw_bboxes(video_frames, player_detections)
     output_video_frames = ball_tracker.draw_bboxes(output_video_frames, ball_detections)
-    output_video_frames = keypoints_detector.draw_keypoints_on_video(output_video_frames, court_keypoints)
 
     # Draw frame number on top left corner
     for i, frame in enumerate(output_video_frames):

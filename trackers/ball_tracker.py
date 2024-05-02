@@ -66,12 +66,14 @@ class BallTracker:
                 x1, y1, x2, y2 = bbox
 
                 # Draw a text alongside bounding boxes
-                text = f'Ball ID: {track_id}'
+                text = f'Tennis Ball'
                 org = (int(bbox[0]), int(bbox[1] - 10))
+                color = (152, 251, 152)
 
-                cv2.putText(img=frame, text=text, org=org, fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.9, color=(128, 0, 128), thickness=2)
+                cv2.putText(frame, text, org, cv2.FONT_HERSHEY_COMPLEX, 0.9, color, 2)
 
-                cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (128, 0, 128), 2)
+                rec = (int(x1), int(y1)), (int(x2), int(y2))
+                cv2.rectangle(frame, rec[0], rec[1], color, 2)
             
             # Draw new data into actual frame
             output_video_frames.append(frame)
