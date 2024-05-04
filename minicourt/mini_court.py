@@ -51,15 +51,57 @@ class MiniCourt():
 
         # Point 2
         keypoints[4] = int(self.court_start_x)
-        keypoints[5] = self.court_start_y + meters_to_pixels(HALF_COURT_LINE_HEIGHT * 2, DOUBLE_LINE_WIDTH, court_width)
+        keypoints[5] = self.court_start_y + meters_to_pixels(HALF_COURT_LINE_HEIGHT * 2)
 
-        # Pixel to meters conversion
-        def pixel_to_meters(pixel_distance, ref_height_meters, ref_height_pixels):
-            return (pixel_distance * ref_height_meters) / ref_height_pixels
+        # Point 3
+        keypoints[6] = keypoints[0] + self.court_width
+        keypoints[7] = keypoints[5] 
+
+        # Point 4
+        keypoints[8] = keypoints[0] +  self.meters_to_pixels(DOUBLE_ALLEY_DIFFERENCE)
+        keypoints[9] = keypoints[1] 
+
+        # Point 5
+        keypoints[10] = keypoints[4] + self.meters_to_pixels(DOUBLE_ALLEY_DIFFERENCE)
+        keypoints[11] = keypoints[5] 
+
+        # Point 6
+        keypoints[12] = keypoints[2] - self.meters_to_pixels(DOUBLE_ALLEY_DIFFERENCE)
+        keypoints[13] = keypoints[3] 
+
+        # Point 7
+        keypoints[14] = keypoints[6] - self.meters_to_pixels(DOUBLE_ALLEY_DIFFERENCE)
+        keypoints[15] = keypoints[7] 
+
+        # Point 8
+        keypoints[16] = keypoints[8] 
+        keypoints[17] = keypoints[9] + self.meters_to_pixels(NO_MANS_LAND_HEIGHT)
+
+        # Point 9
+        keypoints[18] = keypoints[16] + self.meters_to_pixels(SINGLE_LINE_WIDTH)
+        keypoints[19] = keypoints[17] 
+
+        # Point 10
+        keypoints[20] = keypoints[10] 
+        keypoints[21] = keypoints[11] - self.meters_to_pixels(NO_MANS_LAND_HEIGHT)
+
+        # Point 11
+        keypoints[22] = keypoints[20] +  self.meters_to_pixels(SINGLE_LINE_WIDTH)
+        keypoints[23] = keypoints[21] 
+
+        # Point 12
+        keypoints[24] = int((keypoints[16] + keypoints[18]) / 2)
+        keypoints[25] = keypoints[17] 
+
+        # Point 13
+        keypoints[26] = int((keypoints[20] + keypoints[22]) / 2)
+        keypoints[27] = keypoints[21] 
+
+        self.keypoints = keypoints
         
         # Meters to pixels conversion
-        def meters_to_pixels(meters_distance, ref_height_meters, ref_height_pixels):
-            return (meters_distance * ref_height_pixels) / ref_height_meters
+        def meters_to_pixels(meters_distance):
+            return (meters_distance * DOUBLE_LINE_WIDTH) / court_width
 
 
         
