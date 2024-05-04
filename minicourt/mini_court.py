@@ -48,3 +48,18 @@ class MiniCourt():
 
         # Point 1
         keypoints[2], keypoints[3] = int(self.court_end_x), int(self.court_start_y)
+
+        # Point 2
+        keypoints[4] = int(self.court_start_x)
+        keypoints[5] = self.court_start_y + meters_to_pixels(HALF_COURT_LINE_HEIGHT * 2, DOUBLE_LINE_WIDTH, court_width)
+
+        # Pixel to meters conversion
+        def pixel_to_meters(pixel_distance, ref_height_meters, ref_height_pixels):
+            return (pixel_distance * ref_height_meters) / ref_height_pixels
+        
+        # Meters to pixels conversion
+        def meters_to_pixels(meters_distance, ref_height_meters, ref_height_pixels):
+            return (meters_distance * ref_height_pixels) / ref_height_meters
+
+
+        
