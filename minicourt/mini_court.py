@@ -1,4 +1,5 @@
 import cv2
+import numpy
 
 # Court dimensions
 SINGLE_LINE_WIDTH = 8.23
@@ -19,10 +20,12 @@ class MiniCourt():
         self.buffer = 50
         self.padding = 20
 
-        self.set_canvas_background_position(frame)
+        self.set_background_position(frame)
         self.set_mini_court_position()
+        self.set_court_keypoints()
+        self.set_background_position()
 
-    def set_canvas_background_position(self, frame):
+    def set_background_position(self, frame):
         frame = frame.copy()
 
         self.end_x = frame.shape[1] - self.buffer
@@ -103,5 +106,15 @@ class MiniCourt():
         def meters_to_pixels(meters_distance):
             return (meters_distance * DOUBLE_LINE_WIDTH) / court_width
 
+    def set_court_lines(self):
+        self.lines = [
+            (0, 2),
+            (4, 5),
+            (6, 7),
+            (1, 3),
 
-        
+            (0, 1),
+            (8, 9),
+            (10, 11),
+            (2, 3)
+        ]
