@@ -1,5 +1,5 @@
 import cv2
-import numpy
+import numpy as np
 
 # Court dimensions
 SINGLE_LINE_WIDTH = 8.23
@@ -23,7 +23,7 @@ class MiniCourt():
         self.set_background_position(frame)
         self.set_mini_court_position()
         self.set_court_keypoints()
-        self.set_background_position()
+        self.set_background_position(frame)
 
     def set_background_position(self, frame):
         frame = frame.copy()
@@ -35,13 +35,16 @@ class MiniCourt():
         self.start_y = self.end_y - self.drawing_rectangle_height
     
     def set_mini_court_position(self):
-        self.court_start_x = self.start_x + self.padding_court
-        self.court_start_y = self.start_y + self.padding_court
+        self.court_start_x = self.start_x + self.padding
+        self.court_start_y = self.start_y + self.padding
         
-        self.court_end_x = self.end_x - self.padding_court
-        self.court_end_y = self.end_y - self.padding_court
+        self.court_end_x = self.end_x - self.padding
+        self.court_end_y = self.end_y - self.padding
 
         self.court_width = self.court_end_x - self.court_start_x
+
+    def meters_to_pixels(self, meters_distance):
+        return (meters_distance * DOUBLE_LINE_WIDTH) / self.court_width
 
     def set_court_keypoints(self):
         keypoints = [0] * 28
@@ -54,26 +57,26 @@ class MiniCourt():
 
         # Point 2
         keypoints[4] = int(self.court_start_x)
-        keypoints[5] = self.court_start_y + meters_to_pixels(HALF_COURT_LINE_HEIGHT * 2)
+        keypoints[5] = self.court_start_y + self.meters_to_pixels(HALF_COURT_LINE_HEIGHT * 2)
 
         # Point 3
         keypoints[6] = keypoints[0] + self.court_width
         keypoints[7] = keypoints[5] 
 
         # Point 4
-        keypoints[8] = keypoints[0] +  self.meters_to_pixels(DOUBLE_ALLEY_DIFFERENCE)
+        keypoints[8] = keypoints[0] +  self.meters_to_pixels(DOUBLE_ALLEY_DIFF)
         keypoints[9] = keypoints[1] 
 
         # Point 5
-        keypoints[10] = keypoints[4] + self.meters_to_pixels(DOUBLE_ALLEY_DIFFERENCE)
+        keypoints[10] = keypoints[4] + self.meters_to_pixels(DOUBLE_ALLEY_DIFF)
         keypoints[11] = keypoints[5] 
 
         # Point 6
-        keypoints[12] = keypoints[2] - self.meters_to_pixels(DOUBLE_ALLEY_DIFFERENCE)
+        keypoints[12] = keypoints[2] - self.meters_to_pixels(DOUBLE_ALLEY_DIFF)
         keypoints[13] = keypoints[3] 
 
         # Point 7
-        keypoints[14] = keypoints[6] - self.meters_to_pixels(DOUBLE_ALLEY_DIFFERENCE)
+        keypoints[14] = keypoints[6] - self.meters_to_pixels(DOUBLE_ALLEY_DIFF)
         keypoints[15] = keypoints[7] 
 
         # Point 8
@@ -101,10 +104,6 @@ class MiniCourt():
         keypoints[27] = keypoints[21] 
 
         self.keypoints = keypoints
-        
-        # Meters to pixels conversion
-        def meters_to_pixels(meters_distance):
-            return (meters_distance * DOUBLE_LINE_WIDTH) / court_width
 
     def set_court_lines(self):
         self.lines = [
@@ -118,3 +117,22 @@ class MiniCourt():
             (10, 11),
             (2, 3)
         ]
+    
+    def draw_background(self, frames):
+        output_frames = []
+
+        for frame in frames:
+            # Draw background rectangle for every frame
+            shapes = np.zeros_like(frame, np.uint8)
+            cv2.rectangle(shapes, (self.start_x, self.start_y), (self.end_x, self.end_y), (255, 255, 255), -1)
+
+            output_frame = frame.copy()
+            alpha = 0.5
+            mask = shapes.astype(bool)
+            output_frame[mask] = cv2.addWeighted(frame, alpha, shapes, 1 - alpha, 0)[mask]
+
+            output_frames.append(output_frame)
+        
+        return output_frames
+
+        
