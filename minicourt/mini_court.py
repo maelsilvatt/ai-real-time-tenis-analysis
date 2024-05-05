@@ -23,6 +23,7 @@ class MiniCourt():
         self.set_background_position(frame)
         self.set_mini_court_position()
         self.set_court_keypoints()
+        self.set_court_lines()
         self.set_background_position(frame)
 
     def set_background_position(self, frame):
@@ -127,6 +128,21 @@ class MiniCourt():
 
         return frame
 
+    def draw_court_lines(self, frame):
+        for line in self.lines:
+            start = (int(self.keypoints[line[0]*2]), int(self.keypoints[line[0]*2+1]))
+            end = (int(self.keypoints[line[1]*2]), int(self.keypoints[line[1]*2+1]))
+
+            cv2.line(frame, start, end, (0, 0, 0), 2)
+        
+        # Draw net
+        net_start = (self.keypoints[0], int((self.keypoints[1] + self.keypoints[5]) / 2))
+        net_end = (self.keypoints[2], int((self.keypoints[1] + self.keypoints[5]) / 2))
+
+        cv2.line(frame, net_start, net_end, (255, 0, 0), 2)
+
+        return frame
+
     def draw_minicourt(self, frames):
         output_frames = []
 
@@ -140,11 +156,13 @@ class MiniCourt():
             mask = shapes.astype(bool)
             output_frame[mask] = cv2.addWeighted(frame, alpha, shapes, 1 - alpha, 0)[mask]
 
-            # Draw court keypoints
+            # Draw minicourt keypoints
             output_frame = self.draw_keypoints(output_frame)
+            
+            # Draw minicourt lines
+            output_frame = self.draw_court_lines(output_frame)
 
+            # Save frame
             output_frames.append(output_frame)
         
         return output_frames
-
-    
