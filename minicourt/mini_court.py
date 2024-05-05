@@ -16,7 +16,7 @@ PLAYER_2_HEIGHT_METERS = 1.91
 class MiniCourt():
     def __init__(self, frame):
         self.drawing_rectangle_width = 250
-        self.drawing_rectangle_height = 450
+        self.drawing_rectangle_height = 500
         self.buffer = 50
         self.padding = 20
 
@@ -43,8 +43,8 @@ class MiniCourt():
 
         self.court_width = self.court_end_x - self.court_start_x
 
-    def meters_to_pixels(self, meters_distance):
-        return (meters_distance * DOUBLE_LINE_WIDTH) / self.court_width
+    def meters_to_pixels(self, meters):
+        return (meters * self.court_width) / DOUBLE_LINE_WIDTH
 
     def set_court_keypoints(self):
         keypoints = [0] * 28
@@ -118,7 +118,16 @@ class MiniCourt():
             (2, 3)
         ]
     
-    def draw_background(self, frames):
+    def draw_keypoints(self, frame):
+        for i in range(0, len(self.keypoints), 2):
+            x = int(self.keypoints[i])
+            y = int(self.keypoints[i+1])
+
+            cv2.circle(frame, (x, y), 5, (0, 0, 255), -1)
+
+        return frame
+
+    def draw_minicourt(self, frames):
         output_frames = []
 
         for frame in frames:
@@ -131,8 +140,11 @@ class MiniCourt():
             mask = shapes.astype(bool)
             output_frame[mask] = cv2.addWeighted(frame, alpha, shapes, 1 - alpha, 0)[mask]
 
+            # Draw court keypoints
+            output_frame = self.draw_keypoints(output_frame)
+
             output_frames.append(output_frame)
         
         return output_frames
 
-        
+    
