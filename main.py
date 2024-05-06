@@ -27,7 +27,7 @@ def main():
 
     # Draw minicourt
     mini_court = MiniCourt(video_frames[0])
-    output_video_frames = mini_court.draw_minicourt(output_video_frames)
+    output_video_frames = mini_court.draw_mini_court(output_video_frames)
 
     # Draw frame number on top left corner
     for i, frame in enumerate(output_video_frames):

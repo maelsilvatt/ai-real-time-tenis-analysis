@@ -143,7 +143,7 @@ class MiniCourt():
 
         return frame
 
-    def draw_minicourt(self, frames):
+    def draw_mini_court(self, frames):
         output_frames = []
 
         for frame in frames:
@@ -166,3 +166,13 @@ class MiniCourt():
             output_frames.append(output_frame)
         
         return output_frames
+
+    def get_mini_court_start_point(self):
+        return (self.court_start_x, self.court_start_y)
+
+    def get_mini_court_width(self):
+        return self.court_width
+    
+    def get_court_keypoints(self):
+        return self.keypoints
+    
