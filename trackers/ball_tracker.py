@@ -1,12 +1,13 @@
 from ultralytics import YOLO
-import cv2
-import pickle
 import pandas as pd
+import pickle
+import cv2
 
 class BallTracker:
     def __init__(self, model_path):
         self.model = YOLO(model_path)
 
+    # Given a source video, detects and return every ball positions
     def detect_frames(self, frames, read_from_stub=False, stub_path=None):
         ball_detections = []
 
@@ -56,6 +57,21 @@ class BallTracker:
 
         return ball_detections
 
+    # Given ball detections, returns the frames where the ball was hit
+    def get_ball_shot_frames(self, ball_detections):
+        ball_positions = [x.get(1, []) for x in ball_detections]
+
+        df_ball_positions = pd.DataFrame(ball_positions, columns=['x1', 'y1', 'x2', 'y2'])
+
+        # Creates a column to set if the ball was hit in a particular frame
+        df_ball_positions['ball_hit'] = 0
+
+        # Gets ball center
+        df_ball_positions['mean_y'] = (df_ball_positions['y1'] + df_ball_positions['y2']) / 2
+
+        # Computes the mean value of 5 ball positions in y axis
+        df_ball_positions['mid_y_rolling_mean'] = df_ball_positions['mid_y'].rolling(window=5, min_periods=1, center=False).mean()
+        
     # Given a frame, returns bounding boxes with texts on detected players, if there is any
     def draw_bboxes(self, video_frames, ball_detections):
         output_video_frames = []
