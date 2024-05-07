@@ -22,10 +22,11 @@ class MiniCourt():
 
         self.set_background_position(frame)
         self.set_mini_court_position()
-        self.set_court_keypoints()
-        self.set_court_lines()
+        self.set_mini_court_keypoints()
+        self.set_mini_court_lines()
         self.set_background_position(frame)
 
+    # Sets mini court background position
     def set_background_position(self, frame):
         frame = frame.copy()
 
@@ -35,6 +36,7 @@ class MiniCourt():
         self.start_x = self.end_x - self.drawing_rectangle_width
         self.start_y = self.end_y - self.drawing_rectangle_height
     
+    # Sets mini court position on a frame
     def set_mini_court_position(self):
         self.court_start_x = self.start_x + self.padding
         self.court_start_y = self.start_y + self.padding
@@ -44,10 +46,12 @@ class MiniCourt():
 
         self.court_width = self.court_end_x - self.court_start_x
 
+    # Converts meters to pixels for inner computations
     def meters_to_pixels(self, meters):
         return (meters * self.court_width) / DOUBLE_LINE_WIDTH
 
-    def set_court_keypoints(self):
+    # Sets every key point coordinates
+    def set_mini_court_keypoints(self):
         keypoints = [0] * 28
 
         # Point 0
@@ -106,7 +110,8 @@ class MiniCourt():
 
         self.keypoints = keypoints
 
-    def set_court_lines(self):
+    # Sets mini court lines to be drawn
+    def set_mini_court_lines(self):
         self.lines = [
             (0, 2),
             (4, 5),
@@ -119,6 +124,7 @@ class MiniCourt():
             (2, 3)
         ]
     
+    # Draws mini court keypoints
     def draw_keypoints(self, frame):
         for i in range(0, len(self.keypoints), 2):
             x = int(self.keypoints[i])
@@ -128,7 +134,8 @@ class MiniCourt():
 
         return frame
 
-    def draw_court_lines(self, frame):
+    # Draws mini court lines 
+    def draw_mini_court_lines(self, frame):
         for line in self.lines:
             start = (int(self.keypoints[line[0]*2]), int(self.keypoints[line[0]*2+1]))
             end = (int(self.keypoints[line[1]*2]), int(self.keypoints[line[1]*2+1]))
@@ -143,6 +150,7 @@ class MiniCourt():
 
         return frame
 
+    # Draws mini court 
     def draw_mini_court(self, frames):
         output_frames = []
 
@@ -160,19 +168,22 @@ class MiniCourt():
             output_frame = self.draw_keypoints(output_frame)
             
             # Draw minicourt lines
-            output_frame = self.draw_court_lines(output_frame)
+            output_frame = self.draw_mini_court_lines(output_frame)
 
             # Save frame
             output_frames.append(output_frame)
         
         return output_frames
 
+    # Mini court position getter
     def get_mini_court_start_point(self):
         return (self.court_start_x, self.court_start_y)
 
+    # Mini court width getter
     def get_mini_court_width(self):
         return self.court_width
     
-    def get_court_keypoints(self):
+    # Mini court keypoints getter
+    def get_mini_court_keypoints(self):
         return self.keypoints
     
