@@ -187,3 +187,40 @@ class MiniCourt():
     def get_mini_court_keypoints(self):
         return self.keypoints
     
+    # Gets players and ball bounding boxes coordinates
+    def get_bbox_coordinates(self, player_bboxes, ball_bboxes, real_court_keypoints):
+        player_heights = {
+            1: PLAYER_1_HEIGHT_METERS,
+            2: PLAYER_2_HEIGHT_METERS
+        }
+
+        output_player_bbox = []
+        output_ball_bbox = []
+
+
+        for frame, player_bbox in enumerate(player_bboxes):
+            for player_id, bbox in player_bbox.items():
+                x1, y1, x2, y2 = bbox
+                foot_position = int((x1 + x2) /2, y2)
+
+                # Get the closest key point to the player
+
+                # Referential keypoints
+                ref_keypoints = [0, 2, 12, 13]
+
+                closest_key_point = float('inf')
+
+                key_point_idx = ref_keypoints[0]
+
+                for idx in ref_keypoints:
+                    key_point = (real_court_keypoints(idx * 2), real_court_keypoints(idx * 2 + 1))
+                    distance = abs(foot_position[1] - key_point[1])
+
+                    if distance < closest_key_point:
+                        closest_key_point = distance
+                        key_point_idx = idx
+
+
+
+
+
