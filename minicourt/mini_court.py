@@ -199,6 +199,12 @@ class MiniCourt():
 
 
         for frame_idx, player_bbox in enumerate(player_bboxes):
+            # Gets ball position
+            ball_bbox = ball_bboxes[frame_idx]
+            x1, y1, x2, y2 = bbox
+            ball_position = int((x1 + x2) /2, y2)
+
+            output_player_bbox_dict = {}
             for player_id, bbox in player_bbox.items():
                 # Gets player foot position
                 x1, y1, x2, y2 = bbox
@@ -246,3 +252,5 @@ class MiniCourt():
                 closest_mini_court_key_point = (self.keypoints[closest_key_point_idx*2], self.keypoints[closest_key_point_idx*2+1])
                 mini_court_player_position = (closest_mini_court_key_point[0] + mini_court_x_distance_in_pixels,
                                               closest_mini_court_key_point[1] + mini_court_y_distance_in_pixels)
+
+                output_player_bbox_dict[player_id] = mini_court_player_position
