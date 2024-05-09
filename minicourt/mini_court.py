@@ -47,8 +47,8 @@ class MiniCourt():
         self.court_width = self.court_end_x - self.court_start_x
 
     # Converts meters to pixels for inner computations
-    def meters_to_pixels(self, meters):
-        return (meters * self.court_width) / DOUBLE_LINE_WIDTH
+    def meters_to_pixels(self, meters, ref1=self.court_width, ref2=DOUBLE_LINE_WIDTH):
+        return (meters * ref1) / ref2
 
     # Sets every key point coordinates
     def set_mini_court_keypoints(self):
@@ -198,19 +198,17 @@ class MiniCourt():
         output_ball_bbox = []
 
 
-        for frame, player_bbox in enumerate(player_bboxes):
+        for frame_idx, player_bbox in enumerate(player_bboxes):
             for player_id, bbox in player_bbox.items():
+                # Gets player foot position
                 x1, y1, x2, y2 = bbox
                 foot_position = int((x1 + x2) /2, y2)
 
                 # Get the closest key point to the player
-
-                # Referential keypoints
-                ref_keypoints = [0, 2, 12, 13]
+                ref_keypoints = [0, 2, 12, 13]  # referential keypoints
 
                 closest_key_point = float('inf')
-
-                key_point_idx = ref_keypoints[0]
+                closest_key_point_idx = ref_keypoints[0]
 
                 for idx in ref_keypoints:
                     key_point = (real_court_keypoints(idx * 2), real_court_keypoints(idx * 2 + 1))
@@ -218,9 +216,24 @@ class MiniCourt():
 
                     if distance < closest_key_point:
                         closest_key_point = distance
-                        key_point_idx = idx
+                        closest_key_point_idx = idx
 
+                # Gets real court closest keypoint to the player
+                real_court_closest_key_point = (real_court_keypoints[closest_key_point_idx*2], 
+                                                real_court_keypoints[closest_key_point_idx*2+1])
 
+                # Get player height in pixels
+                min_frame_idx = max(0, frame_idx - 20)
+                max_frame_idx = min(len(player_bboxes), frame_idx + 50)
 
+                # Gets player bbox height in pixels for each frame, and then the max height
+                bboxes_heights_in_pixels = [(player_bbox[i][3] - player_bbox[i][1]) for i in range(min_frame_idx, max_frame_idx)]
+                player_heigth_in_pixels = max(bboxes_heights_in_pixels)
 
+                # Gets mini court coordinates
+                with object_position, closest_key_point as p1, p2:
+                    key_point_x_distance_in_pixels, key_point_y_distance_in_pixels = abs(p1[0] - p2[0]), abs(p1[1] - p2[1])
 
+                # Convert pixel distance to meters, doing the oposite operation
+                key_point_x_distance_in_meters = meters_to_pixels(key_point_x_distance_in_pixels, ref1=player_height_in_pixels, ref2=player_height_in_meters)
+                key_point_y_distance_in_meters = meters_to_pixels(key_point_y_distance_in_pixels, ref1=player_height_in_pixels, ref2=player_height_in_meters)
