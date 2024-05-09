@@ -234,6 +234,12 @@ class MiniCourt():
                 with object_position, closest_key_point as p1, p2:
                     key_point_x_distance_in_pixels, key_point_y_distance_in_pixels = abs(p1[0] - p2[0]), abs(p1[1] - p2[1])
 
-                # Convert pixel distance to meters, doing the oposite operation
+                # Convert pixel distance to meters, doing the opposite operation
                 key_point_x_distance_in_meters = meters_to_pixels(key_point_x_distance_in_pixels, ref1=player_height_in_pixels, ref2=player_height_in_meters)
                 key_point_y_distance_in_meters = meters_to_pixels(key_point_y_distance_in_pixels, ref1=player_height_in_pixels, ref2=player_height_in_meters)
+
+                # Convert to mini court coordinates
+                mini_court_x_distance_in_pixels = self.meters_to_pixels(key_point_x_distance_in_meters)
+                mini_court_y_distance_in_pixels = self.meters_to_pixels(key_point_y_distance_in_meters)
+
+                
