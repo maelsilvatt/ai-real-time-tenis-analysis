@@ -201,8 +201,7 @@ class MiniCourt():
         for frame_idx, player_bbox in enumerate(player_bboxes):
             # Gets ball position
             ball_bbox = ball_bboxes[frame_idx]
-            x1, y1, x2, y2 = bbox
-            ball_position = int((x1 + x2) /2, y2)
+            ball_position = (int((bbox[0] + bbox[2]) /2), int((bbox[1] + bbox[3]) / 2))
 
             output_player_bbox_dict = {}
             for player_id, bbox in player_bbox.items():
