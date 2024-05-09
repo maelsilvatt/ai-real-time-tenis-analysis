@@ -242,4 +242,7 @@ class MiniCourt():
                 mini_court_x_distance_in_pixels = self.meters_to_pixels(key_point_x_distance_in_meters)
                 mini_court_y_distance_in_pixels = self.meters_to_pixels(key_point_y_distance_in_meters)
 
-                
+                # Gets player position on mini court
+                closest_mini_court_key_point = (self.keypoints[closest_key_point_idx*2], self.keypoints[closest_key_point_idx*2+1])
+                mini_court_player_position = (closest_mini_court_key_point[0] + mini_court_x_distance_in_pixels,
+                                              closest_mini_court_key_point[1] + mini_court_y_distance_in_pixels)
