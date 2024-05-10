@@ -201,7 +201,20 @@ class MiniCourt():
         for frame_idx, player_bbox in enumerate(player_bboxes):
             # Gets ball position
             ball_bbox = ball_bboxes[frame_idx]
-            ball_position = (int((bbox[0] + bbox[2]) /2), int((bbox[1] + bbox[3]) / 2))
+            x1, y2, x2, y2 = ball_bbox
+            ball_position = (int((x1 + x2) /2), int((y1 + y2) / 2))
+
+            # Gets players foot position
+            get_foot_position = lambda bbox: (int((bbox[0] + bbox[2]) / 2), bbox[3])
+            players_foot_position = list(map(get_foot_position, player_bboxes))
+
+            # Gets ball to players distances
+            ball_to_players_distance = []
+
+            measure_distance = lambda p1, p2: ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
+            ball_to_players_distance = list(map(calculate_distance, ball_position, players_foot_position))
+            
+            ball_closest_player = min(player_bboxes.keys(), ball_to_players_distance)
 
             output_player_bbox_dict = {}
             for player_id, bbox in player_bbox.items():
@@ -239,11 +252,11 @@ class MiniCourt():
                 with object_position, closest_key_point as p1, p2:
                     key_point_x_distance_in_pixels, key_point_y_distance_in_pixels = abs(p1[0] - p2[0]), abs(p1[1] - p2[1])
 
-                # Convert pixel distance to meters, doing the opposite operation
+                # Converts pixel distance to meters, doing the opposite operation
                 key_point_x_distance_in_meters = meters_to_pixels(key_point_x_distance_in_pixels, ref1=player_height_in_pixels, ref2=player_height_in_meters)
                 key_point_y_distance_in_meters = meters_to_pixels(key_point_y_distance_in_pixels, ref1=player_height_in_pixels, ref2=player_height_in_meters)
 
-                # Convert to mini court coordinates
+                # Converts to mini court coordinates
                 mini_court_x_distance_in_pixels = self.meters_to_pixels(key_point_x_distance_in_meters)
                 mini_court_y_distance_in_pixels = self.meters_to_pixels(key_point_y_distance_in_meters)
 
