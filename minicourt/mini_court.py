@@ -201,18 +201,17 @@ class MiniCourt():
         for frame_idx, player_bbox in enumerate(player_bboxes):
             # Gets ball position
             ball_bbox = ball_bboxes[frame_idx]
-            x1, y2, x2, y2 = ball_bbox
-            ball_position = (int((x1 + x2) /2), int((y1 + y2) / 2))
+            get_center = lambda bbox: (int((bbox[0] + bbox[2]) / 2), int((bbox[1] + bbox[3])))
+            ball_position = get_center(ball_bbox)
 
             # Gets players foot position
-            get_foot_position = lambda bbox: (int((bbox[0] + bbox[2]) / 2), bbox[3])
-            players_foot_position = list(map(get_foot_position, player_bboxes))
+            players_center = list(map(get_center, player_bboxes))
 
             # Gets ball to players distances
             ball_to_players_distance = []
 
             measure_distance = lambda p1, p2: ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
-            ball_to_players_distance = list(map(calculate_distance, ball_position, players_foot_position))
+            ball_to_players_distance = list(map(measure_distance, ball_position, players_center))
             
             ball_closest_player = min(player_bboxes.keys(), ball_to_players_distance)
 
