@@ -188,7 +188,7 @@ class MiniCourt():
         return self.keypoints
 
     # Given original elements bboxes, returns their mini court coordinates
-    def get_mini_cours_coords(self, 
+    def get_mini_court_coords(self, 
                               element_position, 
                               closest_key_point, 
                               closest_key_point_idx, 
@@ -214,8 +214,25 @@ class MiniCourt():
         
         return mini_court_element_position
 
+    # Given an element position, returns its closest key point
+    def get_closest_key_point_idx(self, element_position, real_keypoints):
+        ref_keypoints = [0, 2, 12, 13]  # referential keypoints
+
+        closest_key_point = float('inf')
+        closest_key_point_idx = ref_keypoints[0]
+
+        for idx in ref_keypoints:
+            key_point = (real_keypoints[idx * 2], real_keypoints[idx * 2 + 1])
+            distance = abs(element_position[1] - key_point[1])
+
+            if distance < closest_key_point:
+                closest_key_point = distance
+                closest_key_point_idx = idx
+        
+        return closest_key_point_idx
+    
     # Gets players and ball bounding boxes coordinates to draw them after
-    def get_element_bbox_coordinates(self, player_bboxes, ball_bboxes, real_court_keypoints):
+    def get_element_bbox_coords(self, player_bboxes, ball_bboxes, real_keypoints):
         player_heights = {
             1: PLAYER_1_HEIGHT_METERS,
             2: PLAYER_2_HEIGHT_METERS
@@ -227,11 +244,11 @@ class MiniCourt():
         for frame_idx, player_bbox in enumerate(player_bboxes):
             # Gets ball position
             ball_bbox = ball_bboxes[frame_idx][1]
-            get_center = lambda bbox: (int((bbox[0] + bbox[2]) / 2), int((bbox[1] + bbox[3])))
-            ball_position = get_center(ball_bbox)
+            get_bbox_center = lambda bbox: (int((bbox[0] + bbox[2]) / 2), int((bbox[1] + bbox[3])))
+            ball_position = get_bbox_center(ball_bbox)
 
             # Gets players foot position
-            players_center = list(map(get_center, player_bboxes))
+            players_center = list(map(get_bbox_center, player_bboxes))
 
             # Gets ball to players distances
             ball_to_players_distance = []
@@ -239,7 +256,7 @@ class MiniCourt():
             measure_distance = lambda p1, p2: ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
             ball_to_players_distance = list(map(measure_distance, ball_position, players_center))
             
-            ball_closest_player = min(player_bboxes.keys(), ball_to_players_distance)
+            ball_closest_player = min(player_bboxes.keys(), key=ball_to_players_distance)
 
             output_player_bbox_dict = {}
             for player_id, bbox in player_bbox.items():
@@ -247,23 +264,10 @@ class MiniCourt():
                 x1, y1, x2, y2 = bbox
                 foot_position = int((x1 + x2) /2, y2)
 
-                # Get the closest key point to the player
-                ref_keypoints = [0, 2, 12, 13]  # referential keypoints
-
-                closest_key_point = float('inf')
-                closest_key_point_idx = ref_keypoints[0]
-
-                for idx in ref_keypoints:
-                    key_point = (real_court_keypoints(idx * 2), real_court_keypoints(idx * 2 + 1))
-                    distance = abs(foot_position[1] - key_point[1])
-
-                    if distance < closest_key_point:
-                        closest_key_point = distance
-                        closest_key_point_idx = idx
-
                 # Gets real court closest keypoint to the player
-                closest_key_point = (real_court_keypoints[closest_key_point_idx*2], 
-                                                real_court_keypoints[closest_key_point_idx*2+1])
+                closest_key_point_idx = self.get_closest_key_point_idx(foot_position, real_keypoints)
+                closest_key_point = (real_keypoints[closest_key_point_idx*2], 
+                                     real_keypoints[closest_key_point_idx*2+1])
 
                 # Get player height in pixels
                 min_frame_idx = max(0, frame_idx - 20)
@@ -274,14 +278,28 @@ class MiniCourt():
                 bboxes_heights_in_pixels = [get_bbox_height(player_bboxes[i][player_id]) for i in range(min_frame_idx, max_frame_idx)]
                 player_height_in_pixels = max(bboxes_heights_in_pixels)
 
-                mini_court_player_position = self.get_element_bbox_coordinates(foot_position,
+                mini_court_player_position = self.get_mini_court_coords(foot_position,
                                                                                closest_key_point,
                                                                                closest_key_point_idx,
                                                                                player_height_in_pixels,
                                                                                player_heights[player_id])
                 
-                
+                output_player_bbox_dict[player_id] = mini_court_player_position
 
-                output_ball_bboxes.append({1:mini_court_player_position})
+                if ball_closest_player == player_id:
+                    closest_key_point_idx = self.get_closest_key_point_idx(ball_position, real_keypoints)
+                    closest_key_point = (real_keypoints[closest_key_point_idx*2],
+                                             real_keypoints[closest_key_point_idx*2+1])
+                    
+                    mini_court_player_position = self.get_mini_court_coords(ball_position,
+                                                                            closest_key_point
+                                                                            closest_key_point_idx,
+                                                                            player_height_in_pixels,
+                                                                            player_heights[player_id])
+
+
+                    output_ball_bboxes.append({1:mini_court_player_position})
+
             output_player_bboxes.append(output_player_bbox_dict)
+
         return output_player_bboxes, output_ball_bboxes
