@@ -199,7 +199,7 @@ class MiniCourt():
 
         for frame_idx, player_bbox in enumerate(player_bboxes):
             # Gets ball position
-            ball_bbox = ball_bboxes[frame_idx]
+            ball_bbox = ball_bboxes[frame_idx][1]
             get_center = lambda bbox: (int((bbox[0] + bbox[2]) / 2), int((bbox[1] + bbox[3])))
             ball_position = get_center(ball_bbox)
 
