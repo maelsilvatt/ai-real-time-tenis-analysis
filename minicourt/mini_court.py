@@ -47,7 +47,10 @@ class MiniCourt():
         self.court_width = self.court_end_x - self.court_start_x
 
     # Converts meters to pixels for inner computations
-    def meters_to_pixels(self, meters, ref1=self.court_width, ref2=DOUBLE_LINE_WIDTH):
+    def meters_to_pixels(self, meters, ref1=None, ref2=DOUBLE_LINE_WIDTH):
+        if ref1 is None:
+            ref1 = self.court_width
+
         return (meters * ref1) / ref2
 
     # Sets every key point coordinates
@@ -249,7 +252,7 @@ class MiniCourt():
 
             measure_distance = lambda p1, p2: ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
             
-            ball_closest_player = min(player_bboxes.keys(), key=lambda x: measure_distance(ball_position, get_bbox_center(player_bbox[x])))
+            ball_closest_player = min(player_bboxes[frame_idx].keys(), key=lambda x: measure_distance(ball_position, get_bbox_center(player_bbox[x])))
 
             output_player_bbox_dict = {}
             for player_id, bbox in player_bbox.items():
@@ -285,7 +288,7 @@ class MiniCourt():
                                              real_keypoints[closest_key_point_idx*2+1])
                     
                     mini_court_player_position = self.get_mini_court_coords(ball_position,
-                                                                            closest_key_point
+                                                                            closest_key_point,
                                                                             closest_key_point_idx,
                                                                             player_height_in_pixels,
                                                                             player_heights[player_id])
@@ -296,3 +299,7 @@ class MiniCourt():
             output_player_bboxes.append(output_player_bbox_dict)
 
         return output_player_bboxes, output_ball_bboxes
+    
+    # Draws each moving element on the mini court
+    def draw_elements_on_mini_court(self):
+        pass
