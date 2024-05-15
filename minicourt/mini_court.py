@@ -258,7 +258,7 @@ class MiniCourt():
             for player_id, bbox in player_bbox.items():
                 # Gets player foot position
                 x1, y1, x2, y2 = bbox
-                foot_position = int((x1 + x2) /2, y2)
+                foot_position = ((x1 + x2) /2, y2)
 
                 # Gets real court closest keypoint to the player
                 closest_key_point_idx = self.get_closest_key_point_idx(foot_position, real_keypoints)
