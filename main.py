@@ -25,11 +25,9 @@ def main():
     output_video_frames = player_tracker.draw_bboxes(video_frames, player_detections)
     output_video_frames = ball_tracker.draw_bboxes(output_video_frames, ball_detections)
 
-    # Draw minicourt
+    # Draw mini court and its elements
     mini_court = MiniCourt(video_frames[0])
-
-    mini_court.get_element_bbox_coords(player_detections, ball_detections, court_keypoints)
-    output_video_frames = mini_court.draw_mini_court(output_video_frames)
+    output_video_frames = mini_court.draw_mini_court(output_video_frames, player_detections, ball_detections, court_keypoints)
 
     # Draw frame number on top left corner
     for i, frame in enumerate(output_video_frames):

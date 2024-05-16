@@ -133,7 +133,7 @@ class MiniCourt():
             x = int(self.keypoints[i])
             y = int(self.keypoints[i+1])
 
-            cv2.circle(frame, (x, y), 5, (0, 0, 255), -1)
+            cv2.circle(frame, (x, y), 5, (0, 0, 0), -1)
 
         return frame
 
@@ -154,8 +154,12 @@ class MiniCourt():
         return frame
 
     # Draws mini court 
-    def draw_mini_court(self, frames):
+    def draw_mini_court(self, frames, player_detections, ball_detections, real_court_keypoints):
         output_frames = []
+
+        # Gets main elements positions
+        player_positions, ball_positions = self.get_element_positions(player_detections, ball_detections, real_court_keypoints)
+        frame_idx = 0
 
         for frame in frames:
             # Draw background rectangle for every frame
@@ -167,14 +171,20 @@ class MiniCourt():
             mask = shapes.astype(bool)
             output_frame[mask] = cv2.addWeighted(frame, alpha, shapes, 1 - alpha, 0)[mask]
 
-            # Draw minicourt keypoints
+            # Draw mini court keypoints
             output_frame = self.draw_keypoints(output_frame)
             
-            # Draw minicourt lines
+            # Draw mini court lines
             output_frame = self.draw_mini_court_lines(output_frame)
+
+            # Draw mini court elements
+            output_frame = self.draw_mini_court_elements(output_frame, player_positions[frame_idx], ball_positions[frame_idx])
 
             # Save frame
             output_frames.append(output_frame)
+
+            # Update frame counter
+            frame_idx += 1
         
         return output_frames
 
@@ -234,15 +244,15 @@ class MiniCourt():
         
         return closest_key_point_idx
     
-    # Gets players and ball bounding boxes coordinates to draw them after
-    def get_element_bbox_coords(self, player_bboxes, ball_bboxes, real_keypoints):
+    # Gets players and ball positions to draw them
+    def get_element_positions(self, player_bboxes, ball_bboxes, real_keypoints):
         player_heights = {
             1: PLAYER_1_HEIGHT_METERS,
             2: PLAYER_2_HEIGHT_METERS
         }
 
-        output_player_bboxes = []
-        output_ball_bboxes = []
+        player_positions = []
+        ball_positions = []
 
         for frame_idx, player_bbox in enumerate(player_bboxes):
             # Gets ball position
@@ -257,7 +267,7 @@ class MiniCourt():
             output_player_bbox_dict = {}
             for player_id, bbox in player_bbox.items():
                 # Gets player foot position
-                x1, y1, x2, y2 = bbox
+                x1, _, x2, y2 = bbox
                 foot_position = ((x1 + x2) /2, y2)
 
                 # Gets real court closest keypoint to the player
@@ -294,12 +304,26 @@ class MiniCourt():
                                                                             player_heights[player_id])
 
 
-                    output_ball_bboxes.append({1:mini_court_player_position})
+                    #ball_positions.append({1:mini_court_player_position})
+                    ball_positions.append(mini_court_player_position)
 
-            output_player_bboxes.append(output_player_bbox_dict)
+            player_positions.append(output_player_bbox_dict)
 
-        return output_player_bboxes, output_ball_bboxes
+        return player_positions, ball_positions
     
     # Draws each moving element on the mini court
-    def draw_elements_on_mini_court(self):
-        pass
+    def draw_mini_court_elements(self, frame, players_positions, ball_positions):
+        # Gets each player position values
+        p1_positions = players_positions[1]
+        p2_positions = players_positions[2]
+
+        # Draws player 1
+        cv2.circle(frame, (p1_positions[0], p1_positions[1]), 5, (255, 0, 0), -1)
+
+        # Draws player 2
+        cv2.circle(frame, (p2_positions[0], p2_positions[1]), 5, (0, 0, 255), -1)
+
+        # Draws ball
+        cv2.circle(frame, (ball_positions[0], ball_positions[1]), 5, (0, 255, 0), -1)
+
+        return frame
