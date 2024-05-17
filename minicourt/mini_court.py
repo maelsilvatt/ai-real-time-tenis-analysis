@@ -318,12 +318,12 @@ class MiniCourt():
         p2_positions = players_positions[2]
 
         # Draws player 1
-        cv2.circle(frame, (p1_positions[0], p1_positions[1]), 5, (255, 0, 0), -1)
+        cv2.circle(frame, (int(p1_positions[0]), int(p1_positions[1])), 5, (255, 0, 0), -1)
 
         # Draws player 2
-        cv2.circle(frame, (p2_positions[0], p2_positions[1]), 5, (0, 0, 255), -1)
+        cv2.circle(frame, (int(p2_positions[0]), int(p2_positions[1])), 5, (0, 0, 255), -1)
 
         # Draws ball
-        cv2.circle(frame, (ball_positions[0], ball_positions[1]), 5, (0, 255, 0), -1)
+        cv2.circle(frame, (int(ball_positions[0]), int(ball_positions[1])), 5, (0, 255, 0), -1)
 
         return frame
