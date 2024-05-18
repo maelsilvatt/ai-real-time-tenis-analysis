@@ -57,6 +57,8 @@ class MiniCourt():
     def set_mini_court_keypoints(self):
         keypoints = [0] * 28
 
+        meters_to_pixels =  lambda  value : value * 3779.527559
+
         # Point 0
         keypoints[0], keypoints[1] = int(self.court_start_x), int(self.court_start_y)
 
@@ -153,7 +155,7 @@ class MiniCourt():
 
         return frame
 
-    # Draws mini court 
+    # Draws mini court elements
     def draw_mini_court(self, frames, player_detections, ball_detections, real_court_keypoints):
         output_frames = []
 
@@ -212,13 +214,16 @@ class MiniCourt():
         abs_distance = lambda p1, p2: (abs(p1[0] - p2[0]), abs(p1[1] - p2[1]))
         key_point_x_distance_in_pixels, key_point_y_distance_in_pixels = abs_distance(element_position, closest_key_point)
 
-        # Converts pixel distance to meters, doing the opposite operation
-        key_point_x_distance_in_meters = self.meters_to_pixels(key_point_x_distance_in_pixels, ref1=element_height_in_pixels, ref2=element_height_in_meters)
-        key_point_y_distance_in_meters = self.meters_to_pixels(key_point_y_distance_in_pixels, ref1=element_height_in_pixels, ref2=element_height_in_meters)
+        # Converts pixel distance to meters
+        meters_to_pixels =  lambda  value : value * 3779.527559
+        pixel_to_meters = lambda value : value * 0.0003
+
+        key_point_x_distance_in_meters = pixel_to_meters(key_point_x_distance_in_pixels)
+        key_point_y_distance_in_meters = pixel_to_meters(key_point_y_distance_in_pixels)
 
         # Converts to mini court coordinates
-        mini_court_x_distance_in_pixels = self.meters_to_pixels(key_point_x_distance_in_meters)
-        mini_court_y_distance_in_pixels = self.meters_to_pixels(key_point_y_distance_in_meters)
+        mini_court_x_distance_in_pixels = meters_to_pixels(key_point_x_distance_in_meters)
+        mini_court_y_distance_in_pixels = meters_to_pixels(key_point_y_distance_in_meters)
 
         # Gets player position on mini court
         closest_mini_court_key_point = (self.keypoints[closest_key_point_idx*2], self.keypoints[closest_key_point_idx*2+1])
