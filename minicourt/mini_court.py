@@ -46,18 +46,11 @@ class MiniCourt():
 
         self.court_width = self.court_end_x - self.court_start_x
 
-    # Converts meters to pixels for inner computations
-    def meters_to_pixels(self, meters, ref1=None, ref2=DOUBLE_LINE_WIDTH):
-        if ref1 is None:
-            ref1 = self.court_width
-
-        return (meters * ref1) / ref2
-
     # Sets every key point coordinates
     def set_mini_court_keypoints(self):
         keypoints = [0] * 28
 
-        meters_to_pixels =  lambda  value : value * 3779.527559
+        meters_to_pixels =  lambda  value : (value * self.court_width) / DOUBLE_LINE_WIDTH
 
         # Point 0
         keypoints[0], keypoints[1] = int(self.court_start_x), int(self.court_start_y)
@@ -67,42 +60,42 @@ class MiniCourt():
 
         # Point 2
         keypoints[4] = int(self.court_start_x)
-        keypoints[5] = self.court_start_y + self.meters_to_pixels(HALF_COURT_LINE_HEIGHT * 2)
+        keypoints[5] = self.court_start_y + meters_to_pixels(HALF_COURT_LINE_HEIGHT * 2)
 
         # Point 3
         keypoints[6] = keypoints[0] + self.court_width
         keypoints[7] = keypoints[5] 
 
         # Point 4
-        keypoints[8] = keypoints[0] +  self.meters_to_pixels(DOUBLE_ALLEY_DIFF)
+        keypoints[8] = keypoints[0] +  meters_to_pixels(DOUBLE_ALLEY_DIFF)
         keypoints[9] = keypoints[1] 
 
         # Point 5
-        keypoints[10] = keypoints[4] + self.meters_to_pixels(DOUBLE_ALLEY_DIFF)
+        keypoints[10] = keypoints[4] + meters_to_pixels(DOUBLE_ALLEY_DIFF)
         keypoints[11] = keypoints[5] 
 
         # Point 6
-        keypoints[12] = keypoints[2] - self.meters_to_pixels(DOUBLE_ALLEY_DIFF)
+        keypoints[12] = keypoints[2] - meters_to_pixels(DOUBLE_ALLEY_DIFF)
         keypoints[13] = keypoints[3] 
 
         # Point 7
-        keypoints[14] = keypoints[6] - self.meters_to_pixels(DOUBLE_ALLEY_DIFF)
+        keypoints[14] = keypoints[6] - meters_to_pixels(DOUBLE_ALLEY_DIFF)
         keypoints[15] = keypoints[7] 
 
         # Point 8
         keypoints[16] = keypoints[8] 
-        keypoints[17] = keypoints[9] + self.meters_to_pixels(NO_MANS_LAND_HEIGHT)
+        keypoints[17] = keypoints[9] + meters_to_pixels(NO_MANS_LAND_HEIGHT)
 
         # Point 9
-        keypoints[18] = keypoints[16] + self.meters_to_pixels(SINGLE_LINE_WIDTH)
+        keypoints[18] = keypoints[16] + meters_to_pixels(SINGLE_LINE_WIDTH)
         keypoints[19] = keypoints[17] 
 
         # Point 10
         keypoints[20] = keypoints[10] 
-        keypoints[21] = keypoints[11] - self.meters_to_pixels(NO_MANS_LAND_HEIGHT)
+        keypoints[21] = keypoints[11] - meters_to_pixels(NO_MANS_LAND_HEIGHT)
 
         # Point 11
-        keypoints[22] = keypoints[20] +  self.meters_to_pixels(SINGLE_LINE_WIDTH)
+        keypoints[22] = keypoints[20] +  meters_to_pixels(SINGLE_LINE_WIDTH)
         keypoints[23] = keypoints[21] 
 
         # Point 12
@@ -190,18 +183,6 @@ class MiniCourt():
         
         return output_frames
 
-    # Mini court position getter
-    def get_mini_court_start_point(self):
-        return (self.court_start_x, self.court_start_y)
-
-    # Mini court width getter
-    def get_mini_court_width(self):
-        return self.court_width
-    
-    # Mini court keypoints getter
-    def get_mini_court_keypoints(self):
-        return self.keypoints
-
     # Given original elements bboxes, returns their mini court coordinates
     def get_mini_court_coords(self, 
                               element_position, 
@@ -215,8 +196,8 @@ class MiniCourt():
         key_point_x_distance_in_pixels, key_point_y_distance_in_pixels = abs_distance(element_position, closest_key_point)
 
         # Converts pixel distance to meters
-        meters_to_pixels =  lambda  value : value * 3779.527559
-        pixel_to_meters = lambda value : value * 0.0003
+        meters_to_pixels =  lambda  value : (value * self.court_width) / DOUBLE_LINE_WIDTH
+        pixel_to_meters =  lambda  value : (value * element_height_in_meters) / element_height_in_pixels
 
         key_point_x_distance_in_meters = pixel_to_meters(key_point_x_distance_in_pixels)
         key_point_y_distance_in_meters = pixel_to_meters(key_point_y_distance_in_pixels)
