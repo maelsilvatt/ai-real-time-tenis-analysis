@@ -243,7 +243,7 @@ class MiniCourt():
         for frame_idx, player_bbox in enumerate(player_bboxes):
             # Gets ball position
             ball_bbox = ball_bboxes[frame_idx][1]
-            get_bbox_center = lambda bbox: (int((bbox[0] + bbox[2]) / 2), int((bbox[1] + bbox[3])))
+            get_bbox_center = lambda bbox: (int((bbox[0] + bbox[2]) / 2), int((bbox[1] + bbox[3]) / 2))
             ball_position = get_bbox_center(ball_bbox)
 
             measure_distance = lambda p1, p2: ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
@@ -253,8 +253,7 @@ class MiniCourt():
             output_player_bbox_dict = {}
             for player_id, bbox in player_bbox.items():
                 # Gets player foot position
-                x1, _, x2, y2 = bbox
-                foot_position = ((x1 + x2) /2, y2)
+                foot_position = ((bbox[0] + bbox[2]) /2, bbox[3])
 
                 # Gets real court closest keypoint to the player
                 closest_key_point_idx = self.get_closest_key_point_idx(foot_position, real_keypoints)
