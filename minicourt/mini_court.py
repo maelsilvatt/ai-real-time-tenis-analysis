@@ -282,15 +282,13 @@ class MiniCourt():
                     closest_key_point = (real_keypoints[closest_key_point_idx*2],
                                              real_keypoints[closest_key_point_idx*2+1])
                     
-                    mini_court_player_position = self.get_mini_court_coords(ball_position,
+                    mini_court_ball_position = self.get_mini_court_coords(ball_position,
                                                                             closest_key_point,
                                                                             closest_key_point_idx,
                                                                             player_height_in_pixels,
                                                                             player_heights[player_id])
-
-
-                    #ball_positions.append({1:mini_court_player_position})
-                    ball_positions.append(mini_court_player_position)
+                    
+                    ball_positions.append(mini_court_ball_position)
 
             player_positions.append(output_player_bbox_dict)
 
