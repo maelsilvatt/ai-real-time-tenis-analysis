@@ -78,7 +78,7 @@ class BallTracker:
 
         for frame, ball_dict in zip(video_frames, ball_detections):
             # Draw bounding boxes
-            for bbox in ball_dict.items()[1]:
+            for _, bbox in ball_dict.items():
                 x1, y1, x2, y2 = bbox
 
                 # Draw a text alongside bounding boxes
