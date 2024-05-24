@@ -213,6 +213,11 @@ class MiniCourt():
         
         return mini_court_element_position
 
+    # Homography matrix transformation of elements coordinates
+    def get_element_positions(self, element_coordinates, court_ref_key_points, mini_court_ref_key_points):
+              
+        pass
+
     # Given an element position, returns its closest key point
     def get_closest_key_point_idx(self, element_position, real_keypoints):
         ref_keypoints = [0, 2, 12, 13]  # referential keypoints
@@ -229,7 +234,7 @@ class MiniCourt():
                 closest_key_point_idx = idx
         
         return closest_key_point_idx
-    
+
     # Gets players and ball positions to draw them
     def get_element_positions(self, player_bboxes, ball_bboxes, real_keypoints):
         player_heights = {
