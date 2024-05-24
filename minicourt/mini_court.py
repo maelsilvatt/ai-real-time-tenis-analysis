@@ -214,9 +214,30 @@ class MiniCourt():
         return mini_court_element_position
 
     # Homography matrix transformation of elements coordinates
-    def get_element_positions(self, element_coordinates, court_ref_key_points, mini_court_ref_key_points):
-              
-        pass
+    def get_element_positions(self, element_coordinates, court_keypoints, mini_court_keypoints):
+        # Court corneys keypoints
+        pts_src = [
+            (court_keypoints[0], court_keypoints[1]),
+            (court_keypoints[4], court_keypoints[5]),
+            (court_keypoints[6], court_keypoints[7]),
+            (court_keypoints[2], court_keypoints[3])
+        ]
+
+        # Mini court corners keypoints
+        pst_dst = [
+            (mini_court_keypoints[0], mini_court_keypoints[1]),
+            (mini_court_keypoints[4], mini_court_keypoints[5]),
+            (mini_court_keypoints[6], mini_court_keypoints[7]),
+            (mini_court_keypoints[2], mini_court_keypoints[3])
+        ]
+        
+        # Gets homography matrix
+        h, status = cv2.findHomography(pts_src, pst_dst)
+
+        # Transform element coordinates
+        transform_element_coordinates = cv2.warpPerspective()
+
+        return transform_element_coordinates
 
     # Given an element position, returns its closest key point
     def get_closest_key_point_idx(self, element_position, real_keypoints):
